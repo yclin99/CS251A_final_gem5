@@ -454,6 +454,13 @@ def addSEOptions(parser):
                         "to/host/dir1 --redirects /dir2=/path/to/host/dir2")
     parser.add_argument("--wait-gdb", default=False, action='store_true',
                         help="Wait for remote GDB to connect.")
+    parser.add_argument("--l1d_repl", default="LRURP", action='store',type=str,
+                      choices=ObjectList.rp_list.get_names(),
+                      help = "replacement policy for l1")
+    parser.add_argument("--l2_repl", default="LRURP",action='store',type=str,
+                      choices=ObjectList.rp_list.get_names(),
+                      help = "replacement policy for l2")
+
 
 
 def addFSOptions(parser):

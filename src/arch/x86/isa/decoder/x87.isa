@@ -44,7 +44,7 @@ format WarnUnimpl {
             0x2: fcom();
             0x3: fcomp();
             0x4: Inst::FSUB1(Ed);
-            0x5: fsubr();
+            0x5: Inst::FSUBR1(Ed);//fsubr();
             0x6: Inst::FDIV1(Ed);
             0x7: fdivr();
         }
@@ -194,12 +194,12 @@ format WarnUnimpl {
                 default: fcomp();
             }
             0x4: decode MODRM_MOD {
-                0x3: fsubr();
+                0x3: Inst::FSUBR2(Mq); // fsubr();
                 default: Inst::FSUB2(Mq);
             }
             0x5: decode MODRM_MOD {
                 0x3: Inst::FSUB2(Eq);
-                default: fsubr();
+                default: Inst::FSUBR2(Eq); // fsubr();
             }
             0x6: decode MODRM_MOD {
                 0x3: fdivr();

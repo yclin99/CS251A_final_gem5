@@ -111,6 +111,7 @@ class TAGEBase : public SimObject
             comp &= (1ULL << compLength) - 1;
         }
     };
+    
 
   public:
 

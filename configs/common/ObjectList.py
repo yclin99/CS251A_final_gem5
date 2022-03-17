@@ -163,6 +163,7 @@ class EnumList(ObjectList):
 rp_list = ObjectList(getattr(m5.objects, 'BaseReplacementPolicy', None))
 bp_list = ObjectList(getattr(m5.objects, 'BranchPredictor', None))
 cpu_list = CPUList(getattr(m5.objects, 'BaseCPU', None))
+# repl_list = ObjectList(getattr(m5.objects, 'BaseReplacementPolicy', None))
 hwp_list = ObjectList(getattr(m5.objects, 'BasePrefetcher', None))
 indirect_bp_list = ObjectList(getattr(m5.objects, 'IndirectPredictor', None))
 mem_list = ObjectList(getattr(m5.objects, 'AbstractMemory', None))

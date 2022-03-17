@@ -115,11 +115,16 @@ def config_cache(options, system):
         fatal("When elastic trace is enabled, do not configure L2 caches.")
 
     if options.l2cache:
+        # print('options:',options)
         # Provide a clock for the L2 and the L1-to-L2 bus here as they
         # are not connected using addTwoLevelCacheHierarchy. Use the
         # same clock as the CPUs.
         system.l2 = l2_cache_class(clk_domain=system.cpu_clk_domain,
-                                   **_get_cache_opts('l2', options))
+                           size=options.l2_size,
+                           assoc=options.l2_assoc,
+                           replacement_policy=ObjectList.rp_list.get(options.l2_repl)())
+        # system.l2 = l2_cache_class(clk_domain=system.cpu_clk_domain,
+        #                            **_get_cache_opts('l2', options))
 
         system.tol2bus = L2XBar(clk_domain = system.cpu_clk_domain)
         system.l2.cpu_side = system.tol2bus.mem_side_ports
@@ -131,7 +136,10 @@ def config_cache(options, system):
     for i in range(options.num_cpus):
         if options.caches:
             icache = icache_class(**_get_cache_opts('l1i', options))
-            dcache = dcache_class(**_get_cache_opts('l1d', options))
+            # dcache = dcache_class(**_get_cache_opts('l1d', options))
+            dcache = dcache_class(size=options.l1d_size,
+                      assoc=options.l1d_assoc,
+                      replacement_policy=ObjectList.rp_list.get(options.l1d_repl)())
 
             # If we have a walker cache specified, instantiate two
             # instances here
