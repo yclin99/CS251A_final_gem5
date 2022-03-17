@@ -87,6 +87,7 @@ class TAGEBase : public SimObject
     {
         unsigned comp;
         unsigned tmp_comp;
+        unsigned random_counter;
         int compLength;
         int origLength;
         int outpoint;
@@ -112,7 +113,8 @@ class TAGEBase : public SimObject
 
         void update(uint8_t * h)
         {
-            compress_cnter --;
+            random_counter++;
+            compress_cnter--;
             if(!compress_cnter){
                 compressor_update(h);
                 compress_cnter = compress_arr;
@@ -125,12 +127,7 @@ class TAGEBase : public SimObject
         void compressor_update(uint8_t * h){
             comp ^= tmp_comp;
             tmp_comp = 0;
-            h += origLength;
-            for(int i = 0; i < compress_arr; i++){
-                tmp_comp = (comp << 1) | h[0];
-                tmp_comp ^= (comp >> compLength);
-                tmp_comp &= (1ULL << compLength) - 1;
-            }
+            tmp_comp = random_counter & (1ULL << compLength) - 1;
             comp ^= tmp_comp;
         }
     };
