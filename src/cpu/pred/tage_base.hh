@@ -86,11 +86,15 @@ class TAGEBase : public SimObject
     struct FoldedHistory
     {
         unsigned comp;
+        unsigned tmp_comp;
         int compLength;
         int origLength;
         int outpoint;
         int bufferSize;
-
+        int compress_cnter;
+        int compress_arr;
+        // uint8_t *part_global_history;
+        // uint8_t *compressed_history;
         FoldedHistory()
         {
             comp = 0;
@@ -98,6 +102,9 @@ class TAGEBase : public SimObject
 
         void init(int original_length, int compressed_length)
         {
+            compress_cnter = 0;
+            compress_arr = compressed_length;
+
             origLength = original_length;
             compLength = compressed_length;
             outpoint = original_length % compressed_length;
@@ -105,10 +112,26 @@ class TAGEBase : public SimObject
 
         void update(uint8_t * h)
         {
+            compress_cnter --;
+            if(!compress_cnter){
+                compressor_update(h);
+                compress_cnter = compress_arr;
+            }
             comp = (comp << 1) | h[0];
             comp ^= h[origLength] << outpoint;
             comp ^= (comp >> compLength);
             comp &= (1ULL << compLength) - 1;
+        }
+        void compressor_update(uint8_t * h){
+            comp ^= tmp_comp;
+            tmp_comp = 0;
+            h += origLength;
+            for(int i = 0; i < compress_arr; i++){
+                tmp_comp = (comp << 1) | h[0];
+                tmp_comp ^= (comp >> compLength);
+                tmp_comp &= (1ULL << compLength) - 1;
+            }
+            comp ^= tmp_comp;
         }
     };
     
