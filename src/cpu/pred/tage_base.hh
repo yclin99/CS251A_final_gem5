@@ -127,7 +127,7 @@ class TAGEBase : public SimObject
         void compressor_update(uint8_t * h){
             comp ^= tmp_comp;
             tmp_comp = 0;
-            tmp_comp = random_counter & (1ULL << compLength) - 1;
+            tmp_comp = random_counter & ((1ULL << compLength) - 1);
             comp ^= tmp_comp;
         }
     };
