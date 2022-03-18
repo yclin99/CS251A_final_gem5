@@ -106,7 +106,7 @@ class TAGEBase : public SimObject
             origLength = original_length;
             compLength  = compressed_length;
             compLength1 = compressed_length;
-            compLength2 = compressed_length + 5;
+            compLength2 = compressed_length - 3;
             outpoint = original_length % compressed_length;
         }
 
