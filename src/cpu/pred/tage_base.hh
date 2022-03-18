@@ -120,16 +120,18 @@ class TAGEBase : public SimObject
             compressorTableInit();
 
             //compress history
-            compressedHistoryLength = compressed_length / compressorTablesEntriesLength * compressorOutputLength;
+            // compressedHistoryLength = compressed_length;
+            compressedHistoryLength = (original_length / compressorTablesEntriesLength) * compressorOutputLength;
+            compLength2 = compressed_length;
             compressedHistory = new uint8_t[compressedHistoryLength + 1];
             compressOutPoint = compressedHistoryLength % compLength2;
 
             // left 4 bits for compressor
             origLength = original_length - compressorInputLength;
-            compLength  = compressed_length;
+            compLength = compressed_length;
             outpoint = original_length % compressed_length;
 
-            compressorUpdateCounter = compressorTablesEntriesLength;
+            compressorUpdateCounter = compressorInputLength;
             compressorInternalStatus = 0;
         }
 
@@ -150,7 +152,6 @@ class TAGEBase : public SimObject
             comp1 ^= (comp1 >> compLength1);
             comp1 &= (1ULL << compLength1) - 1;
             comp = comp1 ^ comp2;
-
         }
         void compressorUpdate(uint8_t * h){
             for(int i = compressedHistoryLength ; i >= compressorOutputLength; i--){
@@ -168,7 +169,7 @@ class TAGEBase : public SimObject
         }
         void compressorTableInit(){
             for(int i = 0; i < compressorTablesEntriesSize; ++i){
-                compressorTables[i] = i % (1 << compressorOutputLength);
+                compressorTables[i] = i & ((1 << compressorOutputLength) - 1);
             }
         }
     };
