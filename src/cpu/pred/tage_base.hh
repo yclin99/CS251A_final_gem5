@@ -88,9 +88,11 @@ class TAGEBase : public SimObject
         unsigned comp;
         unsigned comp1;
         unsigned comp2;
+        unsigned comp3;
         int compLength;
         int compLength1;
         int compLength2;
+        int compLength3;
         int origLength;
         int outpoint;
         int bufferSize;
@@ -106,7 +108,8 @@ class TAGEBase : public SimObject
             origLength = original_length;
             compLength  = compressed_length;
             compLength1 = compressed_length;
-            compLength2 = compressed_length + 3;
+            compLength2 = compressed_length + 2;
+            compLength3 = compressed_length - 2;
             outpoint = original_length % compressed_length;
         }
 
@@ -120,7 +123,12 @@ class TAGEBase : public SimObject
             comp2 ^= h[origLength] << outpoint;
             comp2 ^= (comp2 >> compLength2);
             comp2 &= (1ULL << compLength2) - 1;
+            comp3 = (comp3 << 1) | h[0];
+            comp3 ^= h[origLength] << outpoint;
+            comp3 ^= (comp3 >> compLength3);
+            comp3 &= (1ULL << compLength3) - 1;
             comp = comp1;
+            comp ^= comp3;
             comp ^= comp2 & ((1ULL << compLength1) - 1);
             comp ^= comp2 >> compLength1;
             comp &= (1ULL << compLength1) - 1;
