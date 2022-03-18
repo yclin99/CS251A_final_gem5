@@ -102,9 +102,8 @@ class TAGEBase : public SimObject
 
         void init(int original_length, int compressed_length)
         {
-            compress_cnter = 0;
             compress_arr = compressed_length;
-
+            compress_cnter = compress_arr;
             origLength = original_length;
             compLength = compressed_length;
             outpoint = original_length % compressed_length;
@@ -113,7 +112,7 @@ class TAGEBase : public SimObject
         void update(uint8_t * h)
         {
             compress_cnter --;
-            if(!compress_cnter){
+            if(compress_cnter == 0){
                 compressor_update(h);
                 compress_cnter = compress_arr;
             }
@@ -132,6 +131,8 @@ class TAGEBase : public SimObject
                 tmp_comp &= (1ULL << compLength) - 1;
             }
             comp ^= tmp_comp;
+            DPRINTF(Tage, "Restoring branch info: %lx; taken? %d; PathHistory:%x, "
+            "pointer:%d\n", bi->branchPC,taken, bi->pathHist, bi->ptGhist);
         }
     };
     
