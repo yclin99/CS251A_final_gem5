@@ -55,6 +55,7 @@
 #include "cpu/static_inst.hh"
 #include "params/TAGEBase.hh"
 #include "sim/sim_object.hh"
+#include "debug/Tage.hh"
 
 namespace gem5
 {
@@ -131,7 +132,7 @@ class TAGEBase : public SimObject
                 tmp_comp &= (1ULL << compLength) - 1;
             }
             comp ^= tmp_comp;
-            DPRINTF(Tage, "compress_test\n");
+            DPRINTF(Tage, "compress_test");
         }
     };
     
