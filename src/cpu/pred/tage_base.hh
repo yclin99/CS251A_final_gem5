@@ -114,7 +114,7 @@ class TAGEBase : public SimObject
 
         void update(uint8_t * h)
         {
-            newMasksUpdate(h)
+            newMasksUpdate(h);
             comp = (comp << 1) | h[0];
             comp ^= h[origLength] << outpoint;
             comp ^= (comp >> compLength);
