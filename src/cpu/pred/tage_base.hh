@@ -55,6 +55,9 @@
 #include "cpu/static_inst.hh"
 #include "params/TAGEBase.hh"
 #include "sim/sim_object.hh"
+#include "base/intmath.hh"
+#include "base/logging.hh"
+#include "debug/Fetch.hh"
 #include "debug/Tage.hh"
 
 namespace gem5
