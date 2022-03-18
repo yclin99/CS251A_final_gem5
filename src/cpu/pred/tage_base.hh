@@ -88,7 +88,7 @@ class TAGEBase : public SimObject
         unsigned comp;
         unsigned tmp_comp;
         int newMasks;
-        int newLegnth;
+        int newLength;
         int compLength;
         int origLength;
         int outpoint;
