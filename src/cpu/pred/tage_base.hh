@@ -95,8 +95,6 @@ class TAGEBase : public SimObject
         int bufferSize;
         int compress_cnter;
         int compress_arr;
-        // uint8_t *part_global_history;
-        // uint8_t *compressed_history;
         FoldedHistory()
         {
             comp = 0;
@@ -104,6 +102,7 @@ class TAGEBase : public SimObject
 
         void init(int original_length, int compressed_length)
         {
+            newMasks = 0;
             newLength = 2;
             compress_arr = compressed_length;
             compress_cnter = compress_arr;
@@ -114,12 +113,13 @@ class TAGEBase : public SimObject
 
         void update(uint8_t * h)
         {
+            comp ^= newMasks;
             newMasksUpdate(h);
             comp = (comp << 1) | h[0];
             comp ^= h[origLength] << outpoint;
             comp ^= (comp >> compLength);
             comp &= (1ULL << compLength) - 1;
-            comp |= (newMasks << compLength);
+            comp ^= newMasks;
         }
         void newMasksUpdate(uint8_t * h){
             newMasks = 0;
