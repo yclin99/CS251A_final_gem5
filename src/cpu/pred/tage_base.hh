@@ -145,7 +145,6 @@ class TAGEBase : public SimObject
                 compressorUpdateCounter = compressorTablesEntriesLength;
             }
 
-
             comp1 = (comp1 << 1) | h[0];
             comp1 ^= h[origLength] << outpoint;
             comp1 ^= (comp1 >> compLength1);
@@ -162,7 +161,6 @@ class TAGEBase : public SimObject
                 compressedHistory[i] = (1ULL & (compressorTables[compressorInternalStatus] >> i));
             }
             comp2 = 0;
-            uint8_t masks;
             for (int i = 0; i < compressedHistoryLength; i++){
                 comp2 = (comp2 << 1) | compressedHistory[i];
                 comp2 ^= (comp2 >> compLength2);
