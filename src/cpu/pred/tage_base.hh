@@ -129,7 +129,7 @@ class TAGEBase : public SimObject
                 Leads[h[i]]++;
             }
             int v = origLength / 4;
-            newMasks = Leads[1] / v;
+            newMasks = Leads[0] / v;
         }
     };
     
