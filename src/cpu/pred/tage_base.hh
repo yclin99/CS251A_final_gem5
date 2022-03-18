@@ -112,7 +112,7 @@ class TAGEBase : public SimObject
         void init(int original_length, int compressed_length)
         {
             //compressor init;
-            compressorTablesEntriesLength = 2;
+            compressorTablesEntriesLength = 4;
             compressorOutputLength = 1;
             compressorTablesEntriesSize = 1 << compressorTablesEntriesLength;
             compressorInputLength = compressorTablesEntriesLength;
@@ -167,9 +167,22 @@ class TAGEBase : public SimObject
             }
         }
         void compressorTableInit(){
-            for(int i = 0; i < compressorTablesEntriesSize; ++i){
-                compressorTables[i] = i % (1 << compressorOutputLength);
-            }
+            compressorTables[10] = 0;
+            compressorTables[5] = 0;
+            compressorTables[13] = 0;
+            compressorTables[14] = 0;
+            compressorTables[15] = 1;
+            compressorTables[7] = 0;
+            compressorTables[11] = 1;
+            compressorTables[6] = 1;
+            compressorTables[3] = 0;
+            compressorTables[9] = 0;
+            compressorTables[4] = 1;
+            compressorTables[2] = 0;
+            compressorTables[1] = 0;
+            compressorTables[0] = 0;
+            compressorTables[8] = 1;
+            compressorTables[12] = 0;
         }
     };
 
