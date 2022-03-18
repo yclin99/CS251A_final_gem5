@@ -118,7 +118,7 @@ class TAGEBase : public SimObject
             compressorTables = new int[compressorTablesEntriesSize];
 
             //compress history
-            compressedHistoryLength = compressed_length / compressorTablesEntriesLength * compressorOutputLength;
+            compressedHistoryLength = compressed_length / compressorTablesEntriesLength * compressorOutputLength / 2;
             compressedHistory = new uint8_t[compressedHistoryLength + 1];
             compressOutPoint = compressedHistoryLength % compLength2;
             for(int i = 0; i < compressorTablesEntriesSize; ++i){
