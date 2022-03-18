@@ -131,8 +131,7 @@ class TAGEBase : public SimObject
                 tmp_comp &= (1ULL << compLength) - 1;
             }
             comp ^= tmp_comp;
-            DPRINTF(Tage, "Restoring branch info: %lx; taken? %d; PathHistory:%x, "
-            "pointer:%d\n", bi->branchPC,taken, bi->pathHist, bi->ptGhist);
+            DPRINTF(Tage, "compress_test\n");
         }
     };
     
