@@ -331,6 +331,7 @@ TAGEBase::updateGHist(uint8_t * &h, bool dir, uint8_t * tab, int &pt)
          pt =  histBufferSize - maxHist;
          h = &tab[pt];
     }
+    DPRINTF(Tage, "test messages\n");
     pt--;
     h--;
     h[0] = (dir) ? 1 : 0;
