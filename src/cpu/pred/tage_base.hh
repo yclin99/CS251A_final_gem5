@@ -123,18 +123,11 @@ class TAGEBase : public SimObject
         void newMasksUpdate(uint8_t * h){
             newMasks = 0;
             int Leads[2] = {0};
-            uint8_t Last = h[0];
             for(int i = 1; i < origLength; i++){
-                if(h[i] == 1){
-                    Leads[Last]++;
-                }
-                else{
-                    Leads[Last]--;
-                }
-                Last = h[i];
+                Leads[h[i]]++;
             }
-            newMasks ^= (Leads[0] >= 0) << 1;
-            newMasks ^= (Leads[1] >= 0);
+            int v = origLength / 4;
+            newMasks = Leads[1] / v;
         }
     };
     
