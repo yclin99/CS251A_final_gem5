@@ -86,13 +86,14 @@ class TAGEBase : public SimObject
     struct FoldedHistory
     {
         unsigned comp;
-        unsigned tmp_comp;
+        unsigned comp1;
+        unsigned comp2;
         int compLength;
+        int compLength1;
+        int compLength2;
         int origLength;
         int outpoint;
         int bufferSize;
-        int compress_cnter;
-        int compress_arr;
         // uint8_t *part_global_history;
         // uint8_t *compressed_history;
         FoldedHistory()
@@ -102,35 +103,27 @@ class TAGEBase : public SimObject
 
         void init(int original_length, int compressed_length)
         {
-            compress_arr = compressed_length;
-            compress_cnter = compress_arr;
             origLength = original_length;
-            compLength = compressed_length;
+            compLength  = compressed_length;
+            compLength1 = compressed_length;
+            compLength2 = compressed_length + 3;
             outpoint = original_length % compressed_length;
         }
 
         void update(uint8_t * h)
         {
-            compress_cnter --;
-            if(compress_cnter == 0){
-                compressor_update(h);
-                compress_cnter = compress_arr;
-            }
-            comp = (comp << 1) | h[0];
-            comp ^= h[origLength] << outpoint;
-            comp ^= (comp >> compLength);
-            comp &= (1ULL << compLength) - 1;
-        }
-        void compressor_update(uint8_t * h){
-            comp ^= tmp_comp;
-            tmp_comp = 0;
-            h += origLength;
-            for(int i = 0; i < compress_arr; i++){
-                tmp_comp = (comp << 1) | h[0];
-                tmp_comp ^= (comp >> compLength);
-                tmp_comp &= (1ULL << compLength) - 1;
-            }
-            comp ^= tmp_comp;
+            comp1 = (comp1 << 1) | h[0];
+            comp1 ^= h[origLength] << outpoint;
+            comp1 ^= (comp1 >> compLength1);
+            comp1 &= (1ULL << compLength1) - 1;
+            comp2 = (comp2 << 1) | h[0];
+            comp2 ^= h[origLength] << outpoint;
+            comp2 ^= (comp2 >> compLength2);
+            comp2 &= (1ULL << compLength2) - 1;
+            comp = comp1;
+            comp ^= comp2 & ((1ULL << compLength1) - 1);
+            comp ^= comp2 >> compLength1;
+            comp &= (1ULL << compLength1) - 1;
         }
     };
     
