@@ -113,6 +113,7 @@ class TAGEBase : public SimObject
         {
             //compressor init;
             compressorTablesEntriesLength = 4;
+            compressorOutputLength = 2;
             compressorTablesEntriesSize = 1 << compressorTablesEntriesLength;
             compressorInputLength = compressorTablesEntriesLength;
             compressorTables = new int[compressorTablesEntriesSize];
