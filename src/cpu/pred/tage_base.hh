@@ -93,9 +93,17 @@ class TAGEBase : public SimObject
         int compLength2;
         int origLength;
         int outpoint;
+        int compressOutPoint;
         int bufferSize;
-        // uint8_t *part_global_history;
-        // uint8_t *compressed_history;
+        int *compressorTables;
+        int compressorTablesEntriesLength;
+        int compressorTablesEntriesSize;
+        int compressorInternalStatus;
+        uint8_t *compressedHistory;
+        int compressorOutputLength;
+        int compressorInputLength;
+        int compressedHistoryLength;
+        int compressorUpdateCounter;
         FoldedHistory()
         {
             comp = 0;
@@ -103,30 +111,63 @@ class TAGEBase : public SimObject
 
         void init(int original_length, int compressed_length)
         {
+            //compressor init;
+            compressorTablesEntriesLength = 4;
+            compressorTablesEntriesSize = 1 << compressorTablesEntriesLength;
+            compressorInputLength = compressorTablesEntriesLength;
+            compressorTables = new int[compressorTablesEntriesSize];
+
+            //compress history
+            compressedHistoryLength = compressed_length / compressorTablesEntriesLength * compressorOutputLength;
+            compressedHistory = new int[compressedHistoryLength + 1];
+            compressOutPoint = compressedHistoryLength % compLength2;
+            for(int i = 0; i < compressorTablesEntriesSize; ++i){
+                compressorTables[i] = i % (1 << compressorOutputLength);
+            }
+
+
             origLength = original_length;
             compLength  = compressed_length;
-            compLength1 = compressed_length;
-            compLength2 = compressed_length - 1;
             outpoint = original_length % compressed_length;
+
+            compressorUpdateCounter = compressorTablesEntriesLength;
+            compressorInternalStatus = 0;
         }
 
         void update(uint8_t * h)
         {
+            compressorInternalStatus = (compressorInternalStatus << 1) | h[origLength];
+            compressorInternalStatus &= (1ULL << compressorTablesEntriesLength) - 1;
+
+            compressorUpdateCounter --;
+            if(compressorUpdateCounter == 0){
+                compressorUpdate(h);
+                compressorUpdateCounter = compressorTablesEntriesLength;
+
+                comp2 = (comp2 << 1) | compressedHistory[0];
+                comp2 ^= compressedHistory[compressedHistoryLength] << compressOutPoint;
+                comp2 ^= (comp2 >> compLength2);
+                comp2 &= (1ULL << compLength2) - 1;
+            }
+
+
             comp1 = (comp1 << 1) | h[0];
             comp1 ^= h[origLength] << outpoint;
             comp1 ^= (comp1 >> compLength1);
             comp1 &= (1ULL << compLength1) - 1;
-            comp2 = (comp2 << 1) | h[0];
-            comp2 ^= h[origLength] << outpoint;
-            comp2 ^= (comp2 >> compLength2);
-            comp2 &= (1ULL << compLength2) - 1;
-            comp = comp1;
-            comp ^= comp2 & ((1ULL << compLength1) - 1);
-            comp ^= comp2 >> compLength1;
-            comp &= (1ULL << compLength1) - 1;
+
+        }
+        void compressorUpdate(uint8_t * h){
+            for(int i = compressedHistoryLength ; i >= compressorOutputLength; i--){
+                compressedHistory[i] = compressedHistory[i - compressorOutputLength];
+            }
+            for (int i = 0; i < compressorOutputLength; i ++ ){
+                compressedHistory[i] = (1ULL & (compressorTables[compressorInternalStatus] >> i));
+            }
+
         }
     };
-    
+
 
   public:
 
