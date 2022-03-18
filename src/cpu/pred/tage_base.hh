@@ -114,7 +114,7 @@ class TAGEBase : public SimObject
 
         void update(uint8_t * h)
         {
-            newMasksUpdate
+            newMasksUpdate(h)
             comp = (comp << 1) | h[0];
             comp ^= h[origLength] << outpoint;
             comp ^= (comp >> compLength);
@@ -134,8 +134,8 @@ class TAGEBase : public SimObject
                 }
                 Last = h[i];
             }
-            newMask ^= (Leads[0] >= 0) << 1;
-            newMask ^= (Leads[1] >= 0);
+            newMasks ^= (Leads[0] >= 0) << 1;
+            newMasks ^= (Leads[1] >= 0);
         }
     };
     
