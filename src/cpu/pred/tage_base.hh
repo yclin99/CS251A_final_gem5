@@ -117,20 +117,21 @@ class TAGEBase : public SimObject
             compressorTablesEntriesSize = 1 << compressorTablesEntriesLength;
             compressorInputLength = compressorTablesEntriesLength;
             compressorTables = new int[compressorTablesEntriesSize];
+            compressorTableInit();
 
             //compress history
-            compressedHistoryLength = compressed_length / compressorTablesEntriesLength * compressorOutputLength / 2;
+            // compressedHistoryLength = compressed_length;
+            compressedHistoryLength = (original_length / compressorTablesEntriesLength) * compressorOutputLength;
+            compLength2 = compressed_length;
             compressedHistory = new uint8_t[compressedHistoryLength + 1];
             compressOutPoint = compressedHistoryLength % compLength2;
-            for(int i = 0; i < compressorTablesEntriesSize; ++i){
-                compressorTables[i] = i % (1 << compressorOutputLength);
-            }
+
             // left 4 bits for compressor
             origLength = original_length - compressorInputLength;
-            compLength  = compressed_length;
+            compLength = compressed_length;
             outpoint = original_length % compressed_length;
 
-            compressorUpdateCounter = compressorTablesEntriesLength;
+            compressorUpdateCounter = compressorInputLength;
             compressorInternalStatus = 0;
         }
 
@@ -150,9 +151,7 @@ class TAGEBase : public SimObject
             comp1 ^= h[origLength] << outpoint;
             comp1 ^= (comp1 >> compLength1);
             comp1 &= (1ULL << compLength1) - 1;
-
             comp = comp1 ^ comp2;
-
         }
         void compressorUpdate(uint8_t * h){
             for(int i = compressedHistoryLength ; i >= compressorOutputLength; i--){
@@ -166,6 +165,11 @@ class TAGEBase : public SimObject
                 comp2 = (comp2 << 1) | compressedHistory[i];
                 comp2 ^= (comp2 >> compLength2);
                 comp2 &= (1ULL << compLength2) - 1;
+            }
+        }
+        void compressorTableInit(){
+            for(int i = 0; i < compressorTablesEntriesSize; ++i){
+                compressorTables[i] = i & ((1 << compressorOutputLength) - 1);
             }
         }
     };
