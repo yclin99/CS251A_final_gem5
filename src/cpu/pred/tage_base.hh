@@ -124,9 +124,8 @@ class TAGEBase : public SimObject
             for(int i = 0; i < compressorTablesEntriesSize; ++i){
                 compressorTables[i] = i % (1 << compressorOutputLength);
             }
-
-
-            origLength = original_length;
+            // left 4 bits for compressor
+            origLength = original_length - compressorInputLength;
             compLength  = compressed_length;
             outpoint = original_length % compressed_length;
 
@@ -136,6 +135,7 @@ class TAGEBase : public SimObject
 
         void update(uint8_t * h)
         {
+            // set compressor internal status everytime retired.
             compressorInternalStatus = (compressorInternalStatus << 1) | h[origLength];
             compressorInternalStatus &= (1ULL << compressorTablesEntriesLength) - 1;
 
@@ -143,11 +143,6 @@ class TAGEBase : public SimObject
             if(compressorUpdateCounter == 0){
                 compressorUpdate(h);
                 compressorUpdateCounter = compressorTablesEntriesLength;
-
-                comp2 = (comp2 << 1) | compressedHistory[0];
-                comp2 ^= compressedHistory[compressedHistoryLength] << compressOutPoint;
-                comp2 ^= (comp2 >> compLength2);
-                comp2 &= (1ULL << compLength2) - 1;
             }
 
 
@@ -155,6 +150,8 @@ class TAGEBase : public SimObject
             comp1 ^= h[origLength] << outpoint;
             comp1 ^= (comp1 >> compLength1);
             comp1 &= (1ULL << compLength1) - 1;
+
+            comp = comp1 ^ comp2;
 
         }
         void compressorUpdate(uint8_t * h){
@@ -164,7 +161,13 @@ class TAGEBase : public SimObject
             for (int i = 0; i < compressorOutputLength; i ++ ){
                 compressedHistory[i] = (1ULL & (compressorTables[compressorInternalStatus] >> i));
             }
-
+            comp2 = 0;
+            uint8_t masks;
+            for (int i = 0; i < compressedHistoryLength; i++){
+                comp2 = (comp2 << 1) | compressedHistory[i];
+                comp2 ^= (comp2 >> compLength2);
+                comp2 &= (1ULL << compLength2) - 1;
+            }
         }
     };
 
