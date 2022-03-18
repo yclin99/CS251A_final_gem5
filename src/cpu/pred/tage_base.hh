@@ -87,6 +87,8 @@ class TAGEBase : public SimObject
     {
         unsigned comp;
         unsigned tmp_comp;
+        int newMasks;
+        int newLegnth;
         int compLength;
         int origLength;
         int outpoint;
@@ -102,35 +104,38 @@ class TAGEBase : public SimObject
 
         void init(int original_length, int compressed_length)
         {
+            newLength = 2;
             compress_arr = compressed_length;
             compress_cnter = compress_arr;
             origLength = original_length;
-            compLength = compressed_length;
+            compLength = compressed_length - newLength;
             outpoint = original_length % compressed_length;
         }
 
         void update(uint8_t * h)
         {
-            compress_cnter --;
-            if(compress_cnter == 0){
-                compressor_update(h);
-                compress_cnter = compress_arr;
-            }
+            newMasksUpdate
             comp = (comp << 1) | h[0];
             comp ^= h[origLength] << outpoint;
             comp ^= (comp >> compLength);
             comp &= (1ULL << compLength) - 1;
+            comp |= (newMasks << compLength);
         }
-        void compressor_update(uint8_t * h){
-            comp ^= tmp_comp;
-            tmp_comp = 0;
-            h += origLength;
-            for(int i = 0; i < compress_arr; i++){
-                tmp_comp = (comp << 1) | h[0];
-                tmp_comp ^= (comp >> compLength);
-                tmp_comp &= (1ULL << compLength) - 1;
+        void newMasksUpdate(uint8_t * h){
+            newMasks = 0;
+            int Leads[2] = {0};
+            uint8_t Last = h[0];
+            for(int i = 1; i < origLength; i++){
+                if(h[i] == 1){
+                    Leads[Last]++;
+                }
+                else{
+                    Leads[Last]--;
+                }
+                Last = h[i];
             }
-            comp ^= tmp_comp;
+            newMask ^= (Leads[0] >= 0) << 1;
+            newMask ^= (Leads[1] >= 0);
         }
     };
     
