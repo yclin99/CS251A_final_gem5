@@ -137,7 +137,7 @@ class TAGEBase : public SimObject
         void update(uint8_t * h)
         {
             // set compressor internal status everytime retired.
-            compressorInternalStatus = (compressorInternalStatus << 1) | h[origLength];
+            compressorInternalStatus = (compressorInternalStatus << 1) | h[0];
             compressorInternalStatus &= (1ULL << compressorTablesEntriesLength) - 1;
 
             compressorUpdateCounter --;
